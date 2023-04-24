@@ -1,60 +1,89 @@
 import * as core from '@actions/core'
+import { count } from 'console'
 
 /**
- * Indicates whether the POST action is running
+ * 指示POST操作是否正在运行
  */
 export const IsPost = !!core.getState('isPost')
 
 /**
- * The repository path for the POST action. The value is empty during the MAIN action.
+ * POST操作的存储库路径。该值在MAIN操作期间为空。
  */
 export const RepositoryPath = core.getState('repositoryPath')
 
 /**
- * The set-safe-directory for the POST action. The value is set if input: 'safe-directory' is set during the MAIN action.
+ * POST操作的set-safe目录。如果在MAIN操作中设置了“safe-directory”，则设置该值。
  */
 export const PostSetSafeDirectory = core.getState('setSafeDirectory') === 'true'
 
 /**
- * The SSH key path for the POST action. The value is empty during the MAIN action.
+ * POST操作的SSH密钥路径。该值在MAIN操作期间为空。
  */
 export const SshKeyPath = core.getState('sshKeyPath')
 
 /**
- * The SSH known hosts path for the POST action. The value is empty during the MAIN action.
+ * POST操作的SSH已知主机路径。该值在MAIN操作期间为空。
  */
 export const SshKnownHostsPath = core.getState('sshKnownHostsPath')
 
 /**
- * Save the repository path so the POST action can retrieve the value.
+ * 保存存储库路径，以便POST操作可以检索该值。
  */
 export function setRepositoryPath(repositoryPath: string): void {
-  core.saveState('repositoryPath', repositoryPath)
+    core.saveState('repositoryPath', repositoryPath)
 }
 
 /**
- * Save the SSH key path so the POST action can retrieve the value.
+ * 保存SSH密钥路径，以便POST操作可以检索该值。
  */
 export function setSshKeyPath(sshKeyPath: string): void {
-  core.saveState('sshKeyPath', sshKeyPath)
+    core.saveState('sshKeyPath', sshKeyPath)
 }
 
 /**
- * Save the SSH known hosts path so the POST action can retrieve the value.
+ * 保存SSH已知主机路径，以便POST操作可以检索该值。
  */
 export function setSshKnownHostsPath(sshKnownHostsPath: string): void {
-  core.saveState('sshKnownHostsPath', sshKnownHostsPath)
+    core.saveState('sshKnownHostsPath', sshKnownHostsPath)
 }
 
 /**
- * Save the set-safe-directory input so the POST action can retrieve the value.
+ * 保存set-safe目录输入，以便POST操作可以检索该值。
  */
 export function setSafeDirectory(): void {
-  core.saveState('setSafeDirectory', 'true')
+    core.saveState('setSafeDirectory', 'true')
 }
 
-// Publish a variable so that when the POST action runs, it can determine it should run the cleanup logic.
-// This is necessary since we don't have a separate entry point.
+// 发布一个变量，以便在POST操作运行时，它可以确定应该运行清理逻辑。
+// 这是必要的，因为我们没有单独的入口点。
 if (!IsPost) {
-  core.saveState('isPost', 'true')
+    core.saveState('isPost', 'true')
+}
+
+function getInput(name: string, defaultValue?: string ): string | undefined | null {
+    const value = core.getInput(name)
+    return value === '' ? defaultValue : value
+}
+
+function getEnv(name: string, defaultValue?: string ): string | undefined | null {
+    const value = process.env[name]
+    return value ?? defaultValue
+}
+
+
+export const inputName = {
+    jumpserver: {
+        host: getInput('jumpserver-host') ?? getEnv('JUMPSERVER_HOST'),
+        ptoken: getInput('jumpserver-ptoken') ?? getEnv('JUMPSERVER_PTOKEN'),
+    },
+
+    shell: {
+        username: getInput('shell-username') ?? getEnv('SHELL_USERNAME', 'runner'),
+        password: getInput('shell-password') ?? getEnv('SHELL_PASSWORD'),
+    },
+
+    tailscal: {
+        hostname: getInput('tailscal-hostname') ?? getEnv('HOSTNAME'),
+        authKey: getInput('tailscal-auth-key') ?? getEnv('TAILSCALE_AUTH_KEY'),
+    }
 }

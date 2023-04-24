@@ -1,11 +1,24 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'shell'
+description: 'Run a shell command'  
+author: 'Lee CQ'
 inputs:
-  milliseconds: # change this
+  tailscale-host: # change this
     required: true
     description: 'input description here'
     default: 'default value if applicable'
+  tailscale-token: # change this
+    required: true
+    description: 'input description here'
+    default: 'default value if applicable'
+  jumpserver-host: # change this
+    required: true
+    description: 'input description here'
+    default: 'default value if applicable'
+  jumpserver-ptoken: # change this
+    required: true
+    description: 'input description here'
+    default: 'default value if applicable'
+  
 runs:
-  using: 'node16'
+  using: 'node18'
   main: 'dist/index.js'
